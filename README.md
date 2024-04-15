@@ -1,5 +1,7 @@
 # KinectBlender
 
+![logo](https://github.com/pddring/KinectBlender/assets/760604/a4dadfab-1a85-41b9-8949-239fe49f8492)
+
 This probably isn't going to work... but it'll be fun to try.
 
 I have an old (discontinued and unsupported) XBox One Kinect sensor.
@@ -11,4 +13,5 @@ I'd like to have one computer in my room connected to a Kinect sensor that perfo
 ## Setup:
 * Install the Kinect runtime: https://www.microsoft.com/en-us/download/details.aspx?id=44559
 * Install the Kinect SDK: https://www.microsoft.com/en-us/download/details.aspx?id=44561
+  
  
