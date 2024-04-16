@@ -62,6 +62,8 @@ namespace KinectServerFramework
 
         void Logger.Log(string message)
         {
+            if (message == null)
+                return;
             if(lstLog.InvokeRequired)
             {
                 lstLog.Invoke(new Action(() =>
