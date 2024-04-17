@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Security.Cryptography;
 using System.Text;
@@ -62,7 +63,7 @@ namespace KinectServerFramework
                 if (m.Success)
                 {
                     url = m.Groups[1].Value;
-                    logger.Log($"Requested: {url}");
+                    logger.Log($"{client.Client.RemoteEndPoint} requested: {url}");
                     Dictionary<string, string> headers = new Dictionary<string, string>();
                     while (line.Length > 0)
                     {
@@ -82,25 +83,48 @@ namespace KinectServerFramework
             }
         }
 
+        private string GetMimeType(string fileName)
+        {
+            string mimeType = "application/unknown";
+            string ext = System.IO.Path.GetExtension(fileName).ToLower();
+            Microsoft.Win32.RegistryKey regKey = Microsoft.Win32.Registry.ClassesRoot.OpenSubKey(ext);
+            if (regKey != null && regKey.GetValue("Content Type") != null)
+                mimeType = regKey.GetValue("Content Type").ToString();
+            return mimeType;
+        }
+
         public void HandleURL(string url, Dictionary<string, string> headers, Stream s)
         {
-            foreach(string key in headers.Keys)
-            {
-                logger.Log($"Header: {key} is {headers[key]}");
-            }
-            string html = "Hello!";
-            byte[] bytes = Encoding.UTF8.GetBytes(html);
+            string html = "Not found!";
+            
             StreamWriter sw = new StreamWriter(s);
-            if(url == "/")
+
+
+            if (url == "/")
             {
-                logger.Log($"Responding with {html}");
+                url = "/index.html";
+            }
+
+            string filename = System.AppContext.BaseDirectory + "static\\" + url.Replace("/","\\");
+
+            if (File.Exists(filename)) {
+                byte[] bytes = File.ReadAllBytes(filename);
+
+                logger.Log($"Responding with file {url}");
+                Dictionary<string, string> responseHeaders = new Dictionary<string, string>() {
+                    { "Date", DateTime.Now.ToString() } ,
+                    { "Server", "KinectBlender" },
+                    { "Last-Modified", DateTime.Now.ToString() },
+                    { "Content-Length", bytes.Length.ToString() },
+                    { "Content-Type", GetMimeType(filename) },
+                    { "Connection", "Closed" },
+                };
                 sw.WriteLine($"HTTP/1.1 200 OK");
-                sw.WriteLine($"Date: {DateTime.Now}");
-                sw.WriteLine($"Server: KinectBlender");
-                sw.WriteLine($"Last-Modified: {DateTime.Now}");
-                sw.WriteLine($"Content-Length: {bytes.Length}");
-                sw.WriteLine("Content-Type: text/html");
-                sw.WriteLine("Connection: Closed");
+                foreach (string key in responseHeaders.Keys)
+                {
+                    sw.WriteLine($"{key}: {responseHeaders[key]}");
+                }
+                
                 sw.Write("\r\n");
                 sw.Flush();
                 s.Write(bytes, 0, bytes.Length);
