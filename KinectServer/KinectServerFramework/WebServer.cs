@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Security.Cryptography;
+using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -18,10 +19,12 @@ namespace KinectServerFramework
     {
         private bool running = false;
         Thread serverThread;
-        Logger logger;
-        public WebServer(Logger logger)
+        ILogger logger;
+        IRequestFrame frameGrabber;
+        public WebServer(ILogger logger, IRequestFrame frameGrabber)
         {
             this.logger = logger;
+            this.frameGrabber = frameGrabber;
             logger.Log($"Web server loading on {Dns.GetHostName()}");
 
             
@@ -73,8 +76,6 @@ namespace KinectServerFramework
                         {
                             headers.Add(m.Groups[1].Value, m.Groups[2].Value);
                         }
-
-
                     }
                     HandleURL(url, headers, s);
                 }
@@ -96,9 +97,6 @@ namespace KinectServerFramework
         public void HandleURL(string url, Dictionary<string, string> headers, Stream s)
         {
             string html = "Not found!";
-            
-            StreamWriter sw = new StreamWriter(s);
-
 
             if (url == "/")
             {
@@ -107,34 +105,59 @@ namespace KinectServerFramework
 
             string filename = System.AppContext.BaseDirectory + "static\\" + url.Replace("/","\\");
 
-            if (File.Exists(filename)) {
-                byte[] bytes = File.ReadAllBytes(filename);
+            // check if requesting an armature
+            Match m = Regex.Match(filename, @"armature([1-6])");
 
+            
+            if(m.Success)
+            {
+                int id = int.Parse(m.Groups[1].Value);
+                string json = frameGrabber.GetArmature(id);
+                logger.Log($"Sending armature {id}");
+                Respond(s, HTTPResponseCode.OK, Encoding.UTF8.GetBytes(json), "text/json");
+
+            } else
+
+            // check if requesting a file
+            if (File.Exists(filename)) {
+                byte [] fileContents = File.ReadAllBytes(filename);
                 logger.Log($"Responding with file {url}");
-                Dictionary<string, string> responseHeaders = new Dictionary<string, string>() {
+                Respond(s, HTTPResponseCode.OK, fileContents, GetMimeType(filename));
+            } else
+            {
+                Respond(s, HTTPResponseCode.NOT_FOUND, Encoding.UTF8.GetBytes("File not found"), "text/html");
+                logger.Log($"Responding with 404");
+            }
+        }
+
+        enum HTTPResponseCode
+        {
+            OK = 200,
+            NOT_FOUND = 404
+        }
+
+        void Respond(Stream s, HTTPResponseCode responseCode, byte[] bytes, string mimeType)
+        {
+            StreamWriter sw = new StreamWriter(s);
+            
+            Dictionary<string, string> responseHeaders = new Dictionary<string, string>() {
                     { "Date", DateTime.Now.ToString() } ,
                     { "Server", "KinectBlender" },
                     { "Last-Modified", DateTime.Now.ToString() },
                     { "Content-Length", bytes.Length.ToString() },
-                    { "Content-Type", GetMimeType(filename) },
+                    { "Content-Type", mimeType },
                     { "Connection", "Closed" },
                 };
-                sw.WriteLine($"HTTP/1.1 200 OK");
-                foreach (string key in responseHeaders.Keys)
-                {
-                    sw.WriteLine($"{key}: {responseHeaders[key]}");
-                }
-                
-                sw.Write("\r\n");
-                sw.Flush();
-                s.Write(bytes, 0, bytes.Length);
-            } else
+            sw.WriteLine($"HTTP/1.1 {((int)responseCode)} {responseCode.ToString()}");
+            foreach (string key in responseHeaders.Keys)
             {
-                logger.Log($"Responding with 404");
-                sw.WriteLine($"HTTP/1.1 404 Not found");
-                sw.Write("\r\n");
-                sw.Flush();
+                sw.WriteLine($"{key}: {responseHeaders[key]}");
             }
+
+            sw.Write("\r\n");
+            sw.Flush();
+            s.Write(bytes, 0, bytes.Length);
+
         }
 
         public void Stop()

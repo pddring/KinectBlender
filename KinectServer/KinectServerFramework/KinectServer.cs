@@ -12,7 +12,7 @@ using Microsoft.Kinect;
 
 namespace KinectServerFramework
 {
-    public partial class KinectServer : Form, Logger
+    public partial class KinectServer : Form, ILogger, IRequestFrame
     {
         public KinectServer()
         {
@@ -29,7 +29,7 @@ namespace KinectServerFramework
         List<Tuple<JointType, JointType>> bones;
         private void Form1_Load(object sender, EventArgs e)
         {
-            web = new WebServer(this);
+            web = new WebServer(this, this);
             k.IsAvailableChanged += K_IsAvailableChanged;
             
             coordinateMapper = k.CoordinateMapper;
@@ -172,6 +172,15 @@ namespace KinectServerFramework
                 lstLog.SelectedIndex = lstLog.Items.Count - 1;
 
             }
+        }
+
+        public string GetArmature(int bodyID)
+        {
+            if(bodyID >= 0 && bodyID <= 5 && bodies != null) {
+                Armature a = new Armature(bodies[bodyID], bodyID, coordinateMapper);
+                return a.ToString();
+            }
+            return "{\"valid\":\"false\"}";
         }
     }
 }

@@ -25,6 +25,7 @@ namespace KinectServerFramework
         {
             StringWriter s = new StringWriter();
             s.WriteLine("{");
+            s.WriteLine(" \"valid\": \"true\",");
             s.WriteLine(" \"lean\": {");
             s.WriteLine($"  \"x\":\"{b.Lean.X}\",");
             s.WriteLine($"  \"y\":\"{b.Lean.Y}\"");

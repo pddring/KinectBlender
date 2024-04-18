@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KinectServerFramework
 {
-    public interface Logger
+    public interface ILogger
     {
         void Log(string message);
     }

@@ -51,13 +51,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Armature.cs" />
+    <Compile Include="IRequestFrame.cs" />
     <Compile Include="KinectServer.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="KinectServer.Designer.cs">
       <DependentUpon>KinectServer.cs</DependentUpon>
     </Compile>
-    <Compile Include="Logger.cs" />
+    <Compile Include="ILogger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="static\favicon.ico">
