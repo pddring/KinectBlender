@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Armature.cs" />
     <Compile Include="KinectServer.cs">
       <SubType>Form</SubType>
     </Compile>

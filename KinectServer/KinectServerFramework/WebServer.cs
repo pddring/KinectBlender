@@ -32,7 +32,7 @@ namespace KinectServerFramework
             running = true;
             serverThread = new Thread(async () =>
             {
-                TcpListener server = new TcpListener(80);
+                TcpListener server = new TcpListener(IPAddress.Any, 80);
                 logger.Log("Starting webserver");
 
                 server.Start();

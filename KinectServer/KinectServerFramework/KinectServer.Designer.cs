@@ -29,9 +29,6 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(KinectServer));
-            this.grpStatus = new System.Windows.Forms.GroupBox();
-            this.panelStatus = new System.Windows.Forms.FlowLayoutPanel();
-            this.lblStatus = new System.Windows.Forms.Label();
             this.grpLog = new System.Windows.Forms.GroupBox();
             this.lstLog = new System.Windows.Forms.ListBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -40,48 +37,25 @@
             this.webServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.grpStatus.SuspendLayout();
-            this.panelStatus.SuspendLayout();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tabControl = new System.Windows.Forms.TabControl();
+            this.tabPreview = new System.Windows.Forms.TabPage();
+            this.txtPreview = new System.Windows.Forms.TextBox();
             this.grpLog.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
+            this.tabControl.SuspendLayout();
+            this.tabPreview.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // grpStatus
-            // 
-            this.grpStatus.Controls.Add(this.panelStatus);
-            this.grpStatus.Dock = System.Windows.Forms.DockStyle.Top;
-            this.grpStatus.Location = new System.Drawing.Point(0, 24);
-            this.grpStatus.Name = "grpStatus";
-            this.grpStatus.Size = new System.Drawing.Size(800, 100);
-            this.grpStatus.TabIndex = 0;
-            this.grpStatus.TabStop = false;
-            this.grpStatus.Text = "Status:";
-            // 
-            // panelStatus
-            // 
-            this.panelStatus.Controls.Add(this.lblStatus);
-            this.panelStatus.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelStatus.Location = new System.Drawing.Point(3, 16);
-            this.panelStatus.Name = "panelStatus";
-            this.panelStatus.Size = new System.Drawing.Size(794, 81);
-            this.panelStatus.TabIndex = 0;
-            // 
-            // lblStatus
-            // 
-            this.lblStatus.AutoSize = true;
-            this.lblStatus.Location = new System.Drawing.Point(3, 0);
-            this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(35, 13);
-            this.lblStatus.TabIndex = 0;
-            this.lblStatus.Text = "label1";
             // 
             // grpLog
             // 
             this.grpLog.Controls.Add(this.lstLog);
-            this.grpLog.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grpLog.Location = new System.Drawing.Point(0, 124);
+            this.grpLog.Dock = System.Windows.Forms.DockStyle.Top;
+            this.grpLog.Location = new System.Drawing.Point(0, 24);
             this.grpLog.Name = "grpLog";
-            this.grpLog.Size = new System.Drawing.Size(800, 326);
+            this.grpLog.Size = new System.Drawing.Size(800, 108);
             this.grpLog.TabIndex = 0;
             this.grpLog.TabStop = false;
             this.grpLog.Text = "Log:";
@@ -92,7 +66,7 @@
             this.lstLog.FormattingEnabled = true;
             this.lstLog.Location = new System.Drawing.Point(3, 16);
             this.lstLog.Name = "lstLog";
-            this.lstLog.Size = new System.Drawing.Size(794, 307);
+            this.lstLog.Size = new System.Drawing.Size(794, 89);
             this.lstLog.TabIndex = 0;
             // 
             // menuStrip1
@@ -117,7 +91,7 @@
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(93, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -133,44 +107,89 @@
             // startToolStripMenuItem
             // 
             this.startToolStripMenuItem.Name = "startToolStripMenuItem";
-            this.startToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.startToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.startToolStripMenuItem.Text = "&Start or stop";
             this.startToolStripMenuItem.Click += new System.EventHandler(this.startToolStripMenuItem_Click);
             // 
             // configureToolStripMenuItem
             // 
             this.configureToolStripMenuItem.Name = "configureToolStripMenuItem";
-            this.configureToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.configureToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.configureToolStripMenuItem.Text = "&Configure";
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.lblStatus});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 428);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(800, 22);
+            this.statusStrip1.TabIndex = 2;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // lblStatus
+            // 
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(118, 17);
+            this.lblStatus.Text = "toolStripStatusLabel1";
+            // 
+            // tabControl
+            // 
+            this.tabControl.Controls.Add(this.tabPreview);
+            this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl.Location = new System.Drawing.Point(0, 132);
+            this.tabControl.Name = "tabControl";
+            this.tabControl.SelectedIndex = 0;
+            this.tabControl.Size = new System.Drawing.Size(800, 296);
+            this.tabControl.TabIndex = 3;
+            // 
+            // tabPreview
+            // 
+            this.tabPreview.Controls.Add(this.txtPreview);
+            this.tabPreview.Location = new System.Drawing.Point(4, 22);
+            this.tabPreview.Name = "tabPreview";
+            this.tabPreview.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPreview.Size = new System.Drawing.Size(792, 270);
+            this.tabPreview.TabIndex = 0;
+            this.tabPreview.Text = "Preview";
+            this.tabPreview.UseVisualStyleBackColor = true;
+            // 
+            // txtPreview
+            // 
+            this.txtPreview.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtPreview.Location = new System.Drawing.Point(3, 3);
+            this.txtPreview.Multiline = true;
+            this.txtPreview.Name = "txtPreview";
+            this.txtPreview.Size = new System.Drawing.Size(786, 264);
+            this.txtPreview.TabIndex = 0;
             // 
             // KinectServer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.tabControl);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.grpLog);
-            this.Controls.Add(this.grpStatus);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "KinectServer";
             this.Text = "Kinect Server";
             this.Load += new System.EventHandler(this.Form1_Load);
-            this.grpStatus.ResumeLayout(false);
-            this.panelStatus.ResumeLayout(false);
-            this.panelStatus.PerformLayout();
             this.grpLog.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
+            this.tabControl.ResumeLayout(false);
+            this.tabPreview.ResumeLayout(false);
+            this.tabPreview.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.GroupBox grpStatus;
-        private System.Windows.Forms.FlowLayoutPanel panelStatus;
-        private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.GroupBox grpLog;
         private System.Windows.Forms.ListBox lstLog;
         private System.Windows.Forms.MenuStrip menuStrip1;
@@ -179,6 +198,11 @@
         private System.Windows.Forms.ToolStripMenuItem webServerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem startToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem configureToolStripMenuItem;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel lblStatus;
+        private System.Windows.Forms.TabControl tabControl;
+        private System.Windows.Forms.TabPage tabPreview;
+        private System.Windows.Forms.TextBox txtPreview;
     }
 }
 
