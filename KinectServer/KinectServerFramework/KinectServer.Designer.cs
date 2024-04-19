@@ -42,6 +42,7 @@
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPreview = new System.Windows.Forms.TabPage();
             this.txtPreview = new System.Windows.Forms.TextBox();
+            this.tab3D = new System.Windows.Forms.TabPage();
             this.grpLog.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -136,6 +137,7 @@
             // tabControl
             // 
             this.tabControl.Controls.Add(this.tabPreview);
+            this.tabControl.Controls.Add(this.tab3D);
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl.Location = new System.Drawing.Point(0, 132);
             this.tabControl.Name = "tabControl";
@@ -162,6 +164,17 @@
             this.txtPreview.Name = "txtPreview";
             this.txtPreview.Size = new System.Drawing.Size(786, 264);
             this.txtPreview.TabIndex = 0;
+            // 
+            // tab3D
+            // 
+            this.tab3D.Location = new System.Drawing.Point(4, 22);
+            this.tab3D.Name = "tab3D";
+            this.tab3D.Padding = new System.Windows.Forms.Padding(3);
+            this.tab3D.Size = new System.Drawing.Size(792, 270);
+            this.tab3D.TabIndex = 1;
+            this.tab3D.Text = "3D";
+            this.tab3D.UseVisualStyleBackColor = true;
+            this.tab3D.Paint += new System.Windows.Forms.PaintEventHandler(this.tab3D_Paint);
             // 
             // KinectServer
             // 
@@ -203,6 +216,7 @@
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage tabPreview;
         private System.Windows.Forms.TextBox txtPreview;
+        private System.Windows.Forms.TabPage tab3D;
     }
 }
 

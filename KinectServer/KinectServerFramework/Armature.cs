@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace KinectServerFramework
 {
-    internal class Armature
+    public class Armature
     {
         public int id;
-        protected Body b;
+        public Body b;
         private const float InferredZPositionClamp = 0.1f;
         CoordinateMapper mapper;
         public Armature(Body b, int id, CoordinateMapper mapper)
@@ -21,7 +21,7 @@ namespace KinectServerFramework
             this.mapper = mapper;
         }
 
-        public override string ToString()
+        public string GetJSON()
         {
             StringWriter s = new StringWriter();
             s.WriteLine("{");
@@ -32,7 +32,7 @@ namespace KinectServerFramework
             s.WriteLine(" \"},");
             s.WriteLine(" \"joints\": [");
             bool firstJoint = true;
-            foreach(JointType j in b.Joints.Keys)
+            foreach (JointType j in b.Joints.Keys)
             {
                 if (firstJoint)
                 {
@@ -43,21 +43,26 @@ namespace KinectServerFramework
                 s.WriteLine($"   \"name\":\"{j}\",");
 
                 CameraSpacePoint pos = b.Joints[j].Position;
-                if(pos.Z < 0)
+                if (pos.Z < 0)
                 {
                     pos.Z = InferredZPositionClamp;
                 }
                 mapper.MapCameraPointToDepthSpace(pos);
-                
+
                 s.WriteLine($"   \"x\":\"{pos.X}\",");
                 s.WriteLine($"   \"y\":\"{pos.Y}\",");
                 s.WriteLine($"   \"z\":\"{pos.Z}\",");
                 s.WriteLine("  }");
             }
-            
+
             s.WriteLine(" ]");
             s.WriteLine("}");
             return s.ToString();
+        }
+
+        public override string ToString()
+        {
+            return GetJSON();
             
         }
     }

@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -29,6 +30,11 @@ namespace KinectServerFramework
         List<Tuple<JointType, JointType>> bones;
         private void Form1_Load(object sender, EventArgs e)
         {
+
+            typeof(Panel).InvokeMember("DoubleBuffered", BindingFlags.SetProperty
+            | BindingFlags.Instance | BindingFlags.NonPublic, null,
+            tab3D, new object[] { true });
+
             web = new WebServer(this, this);
             k.IsAvailableChanged += K_IsAvailableChanged;
             
@@ -102,15 +108,55 @@ namespace KinectServerFramework
                             trackedBodyCount++;
                             Armature a = new Armature(b, i, coordinateMapper);
 
-                            txtPreview.Text = a.ToString();
+                            json += txtPreview.Text = a.GetJSON();
+                            Draw(a);
                         }
                     }
+                    txtPreview.Text = json;
                     this.trackedBodyCount = trackedBodyCount;
                     UpdateStatus();
                 }
                 
             }
             
+        }
+
+        Bitmap imagePreview = null;
+
+        public void Draw(Armature a)
+        {
+            if(imagePreview == null)
+            {
+                imagePreview = new Bitmap(tab3D.Width, tab3D.Height);
+            }
+
+            if(imagePreview.Width != tab3D.Width || imagePreview.Height != tab3D.Height)
+            {
+                imagePreview = new Bitmap(tab3D.Width, tab3D.Height);
+            }
+
+            using (Graphics g = Graphics.FromImage(imagePreview))
+            {
+                g.Clear(Color.Black);
+                int jointWidth = 10;
+                int jointHeight = 10;
+                float scaleX = 200;
+                float scaleY = 200;
+                int offsetX = 50;
+                int offsetY = 50;
+                SolidBrush jointBrush = new SolidBrush(Color.Yellow);
+
+                // draw all joints
+                foreach(JointType j in a.b.Joints.Keys)
+                {
+                    g.FillEllipse(jointBrush,
+                        (imagePreview.Width/2) - (a.b.Joints[j].Position.X * scaleX) + offsetX,
+                        (imagePreview.Height/2) - (a.b.Joints[j].Position.Y * scaleY) + offsetY,
+                        jointWidth, jointHeight);
+                }
+                
+            }
+            tab3D.Invalidate();
         }
 
         private void K_IsAvailableChanged(object sender, IsAvailableChangedEventArgs e)
@@ -181,6 +227,14 @@ namespace KinectServerFramework
                 return a.ToString();
             }
             return "{\"valid\":\"false\"}";
+        }
+
+        private void tab3D_Paint(object sender, PaintEventArgs e)
+        {
+            if (imagePreview != null)
+            {
+                e.Graphics.DrawImage(imagePreview, 0, 0);
+            }
         }
     }
 }
