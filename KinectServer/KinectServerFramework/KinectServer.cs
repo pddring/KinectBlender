@@ -140,15 +140,16 @@ namespace KinectServerFramework
                 g.Clear(Color.Black);
                 int jointWidth = 10;
                 int jointHeight = 10;
-                float scaleX = 200;
-                float scaleY = 200;
-                int offsetX = 50;
-                int offsetY = 50;
+                float scaleX = Width / 2;
+                float scaleY = Height / 2;
+                float offsetX = 0;
+                float offsetY = 0;
+                
                 SolidBrush jointBrush = new SolidBrush(Color.Yellow);
 
                 // draw all joints
                 foreach(JointType j in a.b.Joints.Keys)
-                {
+                {                    
                     g.FillEllipse(jointBrush,
                         (imagePreview.Width/2) - (a.b.Joints[j].Position.X * scaleX) + offsetX,
                         (imagePreview.Height/2) - (a.b.Joints[j].Position.Y * scaleY) + offsetY,
@@ -235,6 +236,11 @@ namespace KinectServerFramework
             {
                 e.Graphics.DrawImage(imagePreview, 0, 0);
             }
+        }
+
+        public bool IsLive(int bodyID)
+        {
+            return bodies[bodyID].IsTracked;
         }
     }
 }

@@ -14,5 +14,12 @@ namespace KinectServerFramework
         /// <param name="bodyID">0-5 index</param>
         /// <returns>JSON</returns>
         string GetArmature(int bodyID);
+
+        /// <summary>
+        /// Checks if a given armature is currently being tracked
+        /// </summary>
+        /// <param name="bodyID">0-5 index</param>
+        /// <returns>true if this armature is currently being tracked</returns>
+        bool IsLive(int bodyID);
     }
 }

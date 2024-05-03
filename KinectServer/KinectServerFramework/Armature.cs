@@ -29,15 +29,17 @@ namespace KinectServerFramework
             s.WriteLine(" \"lean\": {");
             s.WriteLine($"  \"x\":\"{b.Lean.X}\",");
             s.WriteLine($"  \"y\":\"{b.Lean.Y}\"");
-            s.WriteLine(" \"},");
+            s.WriteLine(" },");
             s.WriteLine(" \"joints\": [");
             bool firstJoint = true;
             foreach (JointType j in b.Joints.Keys)
             {
                 if (firstJoint)
                 {
-                    s.Write(",");
                     firstJoint = false;
+                } else
+                {
+                    s.WriteLine(",");
                 }
                 s.WriteLine("  {");
                 s.WriteLine($"   \"name\":\"{j}\",");
@@ -51,12 +53,12 @@ namespace KinectServerFramework
 
                 s.WriteLine($"   \"x\":\"{pos.X}\",");
                 s.WriteLine($"   \"y\":\"{pos.Y}\",");
-                s.WriteLine($"   \"z\":\"{pos.Z}\",");
-                s.WriteLine("  }");
+                s.WriteLine($"   \"z\":\"{pos.Z}\"");
+                s.Write("  }");
             }
 
             s.WriteLine(" ]");
-            s.WriteLine("}");
+            s.Write("}");
             return s.ToString();
         }
 

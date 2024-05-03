@@ -105,8 +105,22 @@ namespace KinectServerFramework
 
             string filename = System.AppContext.BaseDirectory + "static\\" + url.Replace("/","\\");
 
+            // autodetect which armature to send if not specified
+            if(filename.EndsWith("armature.json"))
+            {
+                filename = System.AppContext.BaseDirectory + "static\\armature0.json";
+                for(int i = 0; i < 6; i++) 
+                {
+                    if(frameGrabber.IsLive(i))
+                    {
+                        filename = System.AppContext.BaseDirectory + $"static\\armature{i}.json";
+                        break;
+                    }
+                }
+            }
+
             // check if requesting an armature
-            Match m = Regex.Match(filename, @"armature([1-6])");
+            Match m = Regex.Match(filename, @"armature([0-5])\.json");
 
             
             if(m.Success)
