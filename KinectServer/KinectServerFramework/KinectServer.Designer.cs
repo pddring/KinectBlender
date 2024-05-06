@@ -43,6 +43,7 @@
             this.tabPreview = new System.Windows.Forms.TabPage();
             this.txtPreview = new System.Windows.Forms.TextBox();
             this.tab3D = new System.Windows.Forms.TabPage();
+            this.loadArmatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.grpLog.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -84,6 +85,7 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.loadArmatureToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -92,7 +94,7 @@
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(93, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -176,6 +178,13 @@
             this.tab3D.UseVisualStyleBackColor = true;
             this.tab3D.Paint += new System.Windows.Forms.PaintEventHandler(this.tab3D_Paint);
             // 
+            // loadArmatureToolStripMenuItem
+            // 
+            this.loadArmatureToolStripMenuItem.Name = "loadArmatureToolStripMenuItem";
+            this.loadArmatureToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadArmatureToolStripMenuItem.Text = "&Load armature";
+            this.loadArmatureToolStripMenuItem.Click += new System.EventHandler(this.loadArmatureToolStripMenuItem_Click);
+            // 
             // KinectServer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -217,6 +226,7 @@
         private System.Windows.Forms.TabPage tabPreview;
         private System.Windows.Forms.TextBox txtPreview;
         private System.Windows.Forms.TabPage tab3D;
+        private System.Windows.Forms.ToolStripMenuItem loadArmatureToolStripMenuItem;
     }
 }
 

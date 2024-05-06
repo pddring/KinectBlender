@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace KinectServerFramework
@@ -25,10 +26,10 @@ namespace KinectServerFramework
         {
             StringWriter s = new StringWriter();
             s.WriteLine("{");
-            s.WriteLine(" \"valid\": \"true\",");
+            s.WriteLine(" \"valid\": true,");
             s.WriteLine(" \"lean\": {");
-            s.WriteLine($"  \"x\":\"{b.Lean.X}\",");
-            s.WriteLine($"  \"y\":\"{b.Lean.Y}\"");
+            s.WriteLine($"  \"x\":{b.Lean.X},");
+            s.WriteLine($"  \"y\":{b.Lean.Y}");
             s.WriteLine(" },");
             s.WriteLine(" \"joints\": [");
             bool firstJoint = true;
@@ -51,9 +52,9 @@ namespace KinectServerFramework
                 }
                 mapper.MapCameraPointToDepthSpace(pos);
 
-                s.WriteLine($"   \"x\":\"{pos.X}\",");
-                s.WriteLine($"   \"y\":\"{pos.Y}\",");
-                s.WriteLine($"   \"z\":\"{pos.Z}\"");
+                s.WriteLine($"   \"x\":{pos.X},");
+                s.WriteLine($"   \"y\":{pos.Y},");
+                s.WriteLine($"   \"z\":{pos.Z}");
                 s.Write("  }");
             }
 
@@ -65,7 +66,6 @@ namespace KinectServerFramework
         public override string ToString()
         {
             return GetJSON();
-            
         }
     }
 }

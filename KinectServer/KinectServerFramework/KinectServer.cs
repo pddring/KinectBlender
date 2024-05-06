@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Kinect;
@@ -123,6 +124,43 @@ namespace KinectServerFramework
 
         Bitmap imagePreview = null;
 
+        public void Draw(ArmatureJSON a)
+        {
+            if (imagePreview == null)
+            {
+                imagePreview = new Bitmap(tab3D.Width, tab3D.Height);
+            }
+
+            if (imagePreview.Width != tab3D.Width || imagePreview.Height != tab3D.Height)
+            {
+                imagePreview = new Bitmap(tab3D.Width, tab3D.Height);
+            }
+
+            using (Graphics g = Graphics.FromImage(imagePreview))
+            {
+                g.Clear(Color.Black);
+                int jointWidth = 10;
+                int jointHeight = 10;
+                float scaleX = Width / 2;
+                float scaleY = Height / 2;
+                float offsetX = 0;
+                float offsetY = 0;
+
+                SolidBrush jointBrush = new SolidBrush(Color.Yellow);
+
+                // draw all joints
+                foreach (Joint j in a.joints)
+                {
+                    g.FillEllipse(jointBrush,
+                        (imagePreview.Width / 2) - (j.x * scaleX) + offsetX,
+                        (imagePreview.Height / 2) - (j.y * scaleY) + offsetY,
+                        jointWidth, jointHeight);
+                }
+
+            }
+            tab3D.Invalidate();
+        }
+
         public void Draw(Armature a)
         {
             if(imagePreview == null)
@@ -223,11 +261,15 @@ namespace KinectServerFramework
 
         public string GetArmature(int bodyID)
         {
+            if(manualOverridePose != null)
+            {
+                return manualOverridePose.GetJSON();
+            }
             if(bodyID >= 0 && bodyID <= 5 && bodies != null) {
                 Armature a = new Armature(bodies[bodyID], bodyID, coordinateMapper);
                 return a.ToString();
             }
-            return "{\"valid\":\"false\"}";
+            return "{\"valid\":false}";
         }
 
         private void tab3D_Paint(object sender, PaintEventArgs e)
@@ -240,7 +282,37 @@ namespace KinectServerFramework
 
         public bool IsLive(int bodyID)
         {
+            if(manualOverridePose != null)
+            {
+                return true;
+            }
+            if (bodies == null || bodies[bodyID] == null)
+            {
+                return false;
+            }
             return bodies[bodyID].IsTracked;
+        }
+
+        private void loadArmatureToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Title = "Open armature file";
+            dlg.Filter = "JSON Armature files|*.json";
+            if(dlg.ShowDialog() == DialogResult.OK)
+            {
+                LoadArmature(dlg.FileName);
+            }
+            
+        }
+
+        ArmatureJSON manualOverridePose = null;
+
+        public void LoadArmature(string filename)
+        {
+            string json = File.ReadAllText(filename);
+
+            manualOverridePose = JsonSerializer.Deserialize<ArmatureJSON>(json);
+            Draw(manualOverridePose);
         }
     }
 }

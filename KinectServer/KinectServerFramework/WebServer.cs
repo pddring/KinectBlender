@@ -96,8 +96,6 @@ namespace KinectServerFramework
 
         public void HandleURL(string url, Dictionary<string, string> headers, Stream s)
         {
-            string html = "Not found!";
-
             if (url == "/")
             {
                 url = "/index.html";
