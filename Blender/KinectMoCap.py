@@ -5,26 +5,34 @@ bl_info = {
     "version": (1,0),
 }
 
-import bpy, threading
+import bpy
+import socket
+import re
+import json
 from bpy.props import (StringProperty, IntProperty, PointerProperty, BoolProperty)
 from bpy.types import (PropertyGroup)
 
 class KinectMoCapSettings(PropertyGroup):
     
     def enable_mo_cap(self, context):
-        self.trigger()
+        print("enabling")
+        bpy.app.timers.register(self.trigger)
             
     def trigger(self):
+        print("trigger")
         if self.enabled:
-            try:
-                bpy.ops.get_kinect_coordinates()
-            except:
-                self.enabled = False
-            threading.Timer(1 / self.fps, self.trigger).start()
+            #try:
+                bpy.ops.scene.get_kinect_coordinates()
+                return 1 / self.fps
+            #except:
+            #    self.enabled = False
+        else:
+            return None
+            
     
     server: bpy.props.StringProperty(
         name="Server",
-        default="localhost",
+        default="http://localhost/armature.json",
         description="URL of Kinect web server"
     )
     
@@ -78,24 +86,65 @@ class KinectMoCap(bpy.types.Operator):
     bl_idname = "scene.get_kinect_coordinates"
     bl_label = "Get Kinect joint data"
     bl_options = {'REGISTER', 'UNDO'}
+
+    
+    def get_url(self, url):
+        url = url.replace("http://", "")
+        server = url.split("/")[0]
+    
+        args = url.replace(server,"")
+        buffer = bytes()
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((server, 80)) 
+
+        s.send(bytes("GET /%s HTTP/1.0\r\nHost: %s\r\n\r\n" % (args, server), 'utf-8')) 
+        byte_len = 0
+        while 1:
+            data = s.recv(1) #buffer
+            if not data: break
+        
+            if data == b"\n":
+                line = buffer.decode('utf-8')
+                m = re.search("Content-Length: (\d+)", line)
+                if m:
+                    byte_len = int(m.group(1))
+                
+                buffer = bytes()
+                if line.strip() == "":
+                    buffer = s.recv(byte_len)
+            
+            else:
+                buffer = buffer + data
+            
+        s.close()
+        return buffer.decode('utf-8')
+
     
     
     def execute(self, context):
         k = context.scene.kinect
         
-        import socket
+        joints = json.loads(self.get_url(k.server))
         
-        print("Get joint data")
-        server = (k.server, k.port)
-        client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        client.sendto(b"GetJoints", server)
+        print(joints)
+    
+        keys = bpy.context.scene.objects.keys()
         
-        data = str(client.recv(4096))
+        # add empties
         
-        lines = data.split("\n")
-        for line in lines:
-            name, x, y, z = line.split(" ")
-            print(name + " is at " + str((x,y,z)))
+        for j in joints["joints"]:
+            if j['name'] in keys:
+                print(j['name'], " already exists: moving")
+                o = bpy.context.scene.objects[j['name']]
+                o.location = (j['x'], j['y'], j['z'])
+            else:
+                print("creating", j['name'])
+                o = bpy.data.objects.new(j['name'], None)
+                bpy.context.scene.collection.objects.link(o)
+                o.empty_display_size = .1
+                o.empty_display_type = "PLAIN_AXES"
+                o.location = (j['x'], j['y'], j['z'])
+                o.show_name = True
 
         return {'FINISHED'}
     
@@ -104,7 +153,6 @@ def register():
     bpy.types.Scene.kinect = PointerProperty(type=KinectMoCapSettings)
     bpy.utils.register_class(KinectMoCap)
     bpy.utils.register_class(KinectMoCapUI)
-    print("Registered")
 
 def unregister():
     bpy.utils.unregister_class(KinectMoCap)

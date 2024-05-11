@@ -35,14 +35,22 @@ namespace KinectServerFramework
             running = true;
             serverThread = new Thread(async () =>
             {
-                TcpListener server = new TcpListener(IPAddress.Any, 80);
-                logger.Log("Starting webserver");
+                try
+                {
+                    TcpListener server = new TcpListener(IPAddress.Any, 80);
+                    logger.Log("Starting webserver");
 
-                server.Start();
-                
-                while(running)
-                {                    
-                    await HandleClient(await server.AcceptTcpClientAsync());
+                    server.Start();
+
+                    while (running)
+                    {
+                        await HandleClient(await server.AcceptTcpClientAsync());
+                    }
+                } catch (Exception ex)
+                {
+                    logger.Log(
+                        
+                        ex.Message);
                 }
             });
             serverThread.Start();
