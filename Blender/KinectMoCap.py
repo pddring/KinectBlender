@@ -15,11 +15,9 @@ from bpy.types import (PropertyGroup)
 class KinectMoCapSettings(PropertyGroup):
     
     def enable_mo_cap(self, context):
-        print("enabling")
         bpy.app.timers.register(self.trigger)
             
     def trigger(self):
-        print("trigger")
         if self.enabled:
             #try:
                 bpy.ops.scene.get_kinect_coordinates()
@@ -44,12 +42,20 @@ class KinectMoCapSettings(PropertyGroup):
         max = 30
     )
     
+    swapYZ: bpy.props.BoolProperty(
+        name= "Swap Y and Z axes",
+        description= "Swap Y and Z coordinates",
+        default = True
+    )
+    
     enabled: bpy.props.BoolProperty(
         name = "Enabled",
         description = "Motion capture enabled",
         default = False,
         update = enable_mo_cap
     )
+    
+    
 
 class KinectMoCapUI(bpy.types.Panel):
     bl_idname = "SCENE_PT_kinect"
@@ -68,19 +74,17 @@ class KinectMoCapUI(bpy.types.Panel):
         row = layout.row()
         row.prop(k, "server")
         
-
         row = layout.row()
         row.label(text="Client:")
         
         row = layout.row()
         row.operator("scene.get_kinect_coordinates")
-        
 
         row.prop(k, "fps")
         row.prop(k, "enabled")
         
-
-        
+        row = layout.row()
+        row.prop(k, "swapYZ")
 
 class KinectMoCap(bpy.types.Operator):
     bl_idname = "scene.get_kinect_coordinates"
@@ -125,14 +129,28 @@ class KinectMoCap(bpy.types.Operator):
         k = context.scene.kinect
         
         joints = json.loads(self.get_url(k.server))
-        
-        print(joints)
     
         keys = bpy.context.scene.objects.keys()
         
+        # check if root empty exists
+        if "KinectArmature" in keys:
+            parent = bpy.context.scene.objects["KinectArmature"]
+        else:
+            parent = bpy.data.objects.new("KinectArmature", None)
+            parent.empty_display_type="CONE"
+            parent.show_name = True
+            bpy.context.scene.collection.objects.link(parent)
+            
         # add empties
-        
         for j in joints["joints"]:
+            if k.swapYZ:
+                j['y'], j['z'] = j['z'], j['y']
+            
+            """j['x'] = j['x'] * parent.scale[0] + parent.location[0]
+            j['y'] = j['y'] * parent.scale[1] + parent.location[1]
+            j['z'] = j['z'] * parent.scale[2] + parent.location[2]"""
+            
+            
             if j['name'] in keys:
                 print(j['name'], " already exists: moving")
                 o = bpy.context.scene.objects[j['name']]
@@ -145,6 +163,7 @@ class KinectMoCap(bpy.types.Operator):
                 o.empty_display_type = "PLAIN_AXES"
                 o.location = (j['x'], j['y'], j['z'])
                 o.show_name = True
+                o.parent = parent
 
         return {'FINISHED'}
     

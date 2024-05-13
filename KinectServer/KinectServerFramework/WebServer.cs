@@ -132,9 +132,15 @@ namespace KinectServerFramework
             if(m.Success)
             {
                 int id = int.Parse(m.Groups[1].Value);
-                string json = frameGrabber.GetArmature(id);
-                logger.Log($"Sending armature {id}");
-                Respond(s, HTTPResponseCode.OK, Encoding.UTF8.GetBytes(json), "text/json");
+                try
+                {
+                    string json = frameGrabber.GetArmature(id);
+                    logger.Log($"Sending armature {id}");
+                    Respond(s, HTTPResponseCode.OK, Encoding.UTF8.GetBytes(json), "text/json");
+                } catch(Exception e)
+                {
+                    Respond(s, HTTPResponseCode.NOT_FOUND, Encoding.UTF8.GetBytes(e.Message), "text/html");
+                }
 
             } else
 
