@@ -31,6 +31,7 @@ namespace KinectServerFramework
             s.WriteLine($"  \"x\":{b.Lean.X},");
             s.WriteLine($"  \"y\":{b.Lean.Y}");
             s.WriteLine(" },");
+
             s.WriteLine(" \"joints\": [");
             bool firstJoint = true;
             foreach (JointType j in b.Joints.Keys)
@@ -43,7 +44,7 @@ namespace KinectServerFramework
                     s.WriteLine(",");
                 }
                 s.WriteLine("  {");
-                s.WriteLine($"   \"name\":\"{j}\",");
+                s.WriteLine($"   \"name\":\"{j}\",");               
 
                 CameraSpacePoint pos = b.Joints[j].Position;
                 if (pos.Z < 0)
@@ -51,10 +52,12 @@ namespace KinectServerFramework
                     pos.Z = InferredZPositionClamp;
                 }
                 mapper.MapCameraPointToDepthSpace(pos);
+                Vector4 quat = b.JointOrientations[j].Orientation;
 
                 s.WriteLine($"   \"x\":{pos.X},");
                 s.WriteLine($"   \"y\":{pos.Y},");
                 s.WriteLine($"   \"z\":{pos.Z}");
+                s.WriteLine($"   \"orientation\": [{quat.W}, {quat.X}, {quat.Y}, {quat.Z}]");
                 s.Write("  }");
             }
 
